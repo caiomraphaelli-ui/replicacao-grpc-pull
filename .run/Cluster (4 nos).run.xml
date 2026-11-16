@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Cluster (4 nos)" type="CompoundRunConfigurationType">
+    <toRun name="No 1" type="Application" />
+    <toRun name="No 2" type="Application" />
+    <toRun name="No 3" type="Application" />
+    <toRun name="No 4" type="Application" />
+    <method v="2" />
+  </configuration>
+</component>

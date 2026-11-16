@@ -1,0 +1,74 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "request": "launch",
+      "projectName": "replicacao-grpc-pull",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "name": "No 1",
+      "mainClass": "br.utfpr.sd.raft.NodeMain",
+      "args": "1"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "projectName": "replicacao-grpc-pull",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "name": "No 2",
+      "mainClass": "br.utfpr.sd.raft.NodeMain",
+      "args": "2"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "projectName": "replicacao-grpc-pull",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "name": "No 3",
+      "mainClass": "br.utfpr.sd.raft.NodeMain",
+      "args": "3"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "projectName": "replicacao-grpc-pull",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "name": "No 4",
+      "mainClass": "br.utfpr.sd.raft.NodeMain",
+      "args": "4"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "projectName": "replicacao-grpc-pull",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "name": "Cliente",
+      "mainClass": "br.utfpr.sd.raft.ClientMain"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "projectName": "replicacao-grpc-pull",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "name": "Limpar dados",
+      "mainClass": "br.utfpr.sd.raft.ResetData"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Cluster (4 nos)",
+      "configurations": [
+        "No 1",
+        "No 2",
+        "No 3",
+        "No 4"
+      ]
+    }
+  ]
+}

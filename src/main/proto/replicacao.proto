@@ -1,0 +1,139 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "br.utfpr.sd.raft.grpc";
+
+package replicacao;
+
+// ============================================================
+// Comunicação ENTRE os nós do cluster
+// ============================================================
+service ReplicationService {
+  // Modelo Pull: a réplica pergunta ao líder (serve também de heartbeat)
+  rpc Fetch (FetchRequest) returns (FetchResponse);
+  // Eleição estilo Raft
+  rpc RequestVote (VoteRequest) returns (VoteResponse);
+  // Anúncio do novo líder logo após a eleição (equivalente ao BeginQuorumEpoch do KRaft)
+  rpc BeginQuorumEpoch (BeginQuorumEpochRequest) returns (BeginQuorumEpochResponse);
+}
+
+message Entry {
+  int64 index = 1;
+  int64 term = 2;
+  string type = 3;   // "PUT" ou "NOOP" (entrada gravada pelo líder ao assumir)
+  string key = 4;
+  string value = 5;
+}
+
+message FetchRequest {
+  int64 term = 1;            // termo atual da réplica
+  int32 replica_id = 2;
+  int64 last_log_index = 3;  // último índice do log da réplica
+  int64 last_log_term = 4;   // termo da última entrada do log da réplica
+}
+
+message FetchResponse {
+  enum Status {
+    OK = 0;          // logs consistentes; entries traz as novas entradas
+    NOT_LEADER = 1;  // quem respondeu não é líder; leader_id é uma dica
+    STALE_TERM = 2;  // termo da réplica está desatualizado
+    DIVERGING = 3;   // log da réplica diverge; truncar até truncate_to
+  }
+  int64 term = 1;
+  int32 leader_id = 2;
+  Status status = 3;
+  repeated Entry entries = 4;
+  int64 commit_index = 5;
+  int64 truncate_to = 6;
+}
+
+message VoteRequest {
+  int64 term = 1;
+  int32 candidate_id = 2;
+  int64 last_log_index = 3;
+  int64 last_log_term = 4;
+}
+
+message VoteResponse {
+  int64 term = 1;
+  bool vote_granted = 2;
+}
+
+message BeginQuorumEpochRequest {
+  int64 term = 1;
+  int32 leader_id = 2;
+}
+
+message BeginQuorumEpochResponse {
+  int64 term = 1;
+}
+
+// ============================================================
+// Comunicação CLIENTE -> nós do cluster
+// ============================================================
+service ClientService {
+  rpc Write (WriteRequest) returns (WriteResponse);
+  rpc Read (ReadRequest) returns (ReadResponse);
+  rpc Status (Empty) returns (StatusResponse);
+  rpc DumpLog (Empty) returns (LogResponse);
+  // Apenas para os cenários de teste
+  rpc DebugWriteAndCrash (WriteRequest) returns (WriteResponse);
+  rpc DebugPauseCommit (PauseRequest) returns (StatusResponse);
+}
+
+message Empty {}
+
+message WriteRequest {
+  string key = 1;
+  string value = 2;
+}
+
+message WriteResponse {
+  enum Result {
+    COMMITTED = 0;
+    NOT_LEADER = 1;
+    NO_QUORUM = 2;
+    TIMEOUT = 3;
+    FAILED = 4;
+  }
+  Result result = 1;
+  int32 leader_id = 2;
+  int64 index = 3;
+  int64 term = 4;
+  string message = 5;
+}
+
+message ReadRequest {
+  string key = 1;  // vazio = ler tudo
+}
+
+message ReadResponse {
+  int32 node_id = 1;
+  string role = 2;
+  int64 commit_index = 3;
+  bool found = 4;
+  string value = 5;
+  map<string, string> data = 6;
+}
+
+message StatusResponse {
+  int32 node_id = 1;
+  string role = 2;
+  int64 term = 3;
+  int32 leader_id = 4;
+  int64 commit_index = 5;
+  int64 last_log_index = 6;
+  int32 voted_for = 7;
+  repeated int32 active_replicas = 8;
+  bool commit_paused = 9;
+}
+
+message LogResponse {
+  int32 node_id = 1;
+  int64 commit_index = 2;
+  repeated Entry entries = 3;
+}
+
+message PauseRequest {
+  bool paused = 1;
+}

@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="No 4" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="br.utfpr.sd.raft.NodeMain" />
+    <module name="replicacao-grpc-pull" />
+    <option name="PROGRAM_PARAMETERS" value="4" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
