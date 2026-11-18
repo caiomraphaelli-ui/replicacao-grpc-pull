@@ -12,15 +12,6 @@ import java.util.stream.Collectors;
 
 /**
  * Lógica de um nó do cluster. O mesmo código assume os papéis SEGUIDOR, CANDIDATO e LIDER.
- *
- * Replicação no modelo PULL (estilo KRaft): o líder NÃO envia nada às réplicas;
- * são as réplicas que enviam FetchRequest periódicos ao líder. O FetchRequest:
- *   - busca novas entradas (a partir de last_log_index + 1);
- *   - confirma ao líder até onde o log da réplica está gravado (usado para o quórum);
- *   - funciona como heartbeat (o líder sabe que a réplica está viva).
- *
- * Concorrência: todo o estado é protegido pelo monitor do próprio objeto (synchronized).
- * Chamadas gRPC para outros nós são feitas FORA do lock.
  */
 public class RaftNode {
 
